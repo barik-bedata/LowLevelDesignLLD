@@ -2,7 +2,7 @@
 
 ## 📖 Overview (সংক্ষিপ্ত ধারণা)
 Composite Pattern এমন একটি স্ট্রাকচারাল ডিজাইন প্যাটার্ন যা অবজেক্টগুলোকে একটি **"Tree" (গাছ)** এর মতো স্ট্রাকচারে সাজাতে সাহায্য করে। এর সবচেয়ে বড় ম্যাজিক হলো—এটি আপনাকে একটি সিঙ্গেল অবজেক্ট (Leaf) এবং অনেকগুলো অবজেক্টের গ্রুপ (Composite) কে **একইভাবে (Uniformly)** ট্রিট করার সুবিধা দেয়।
-### **Composite Design Pattern: Composes objects into tree structures to represent part-whole hierarchies, so clients treat single objects and groups of objects the same way.**
+### **Composite Design Pattern:** Composes objects into tree structures to represent part-whole hierarchies, so clients treat single objects and groups of objects the same way.
 
 ---
 
