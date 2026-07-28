@@ -456,6 +456,178 @@ DELETE FROM departments WHERE dept_id = 2;
 
 ---
 
+### 📚 ক্যান্ডিডেট কী বের করার আরও ৩টি অ্যাডভান্সড ও বাস্তব উদাহরণ (Advanced Examples)
+
+বিভিন্ন জটিলতা ও কলাম কম্বিনেশনের ওপর ভিত্তি করে নিচে ৩টি বাস্তব উদাহরণ ধাপ ও সাব-ধাপসহ বিস্তারিত আলোচনা করা হলো:
+
+---
+
+#### 🌟 উদাহরণ ১: ১-কলামের এবং ২-কলামের ক্যান্ডিডেট কী একসাথে থাকার উদাহরণ
+*(একই টেবিলে একটি ১-কলামের ক্যান্ডিডেট কী এবং একটি ২-কলামের ক্যান্ডিডেট কী একসাথে থাকবে)*
+
+ধরি, আমাদের একটি গাড়ির ফিটনেস ও রুট পারমিট টেবিল রয়েছে: `vehicle_permits`
+এখানে কলামগুলো হলো:
+* `permit_id` (পারমিটের অটো-জেনারেটেড ইউনিক আইডি)
+* `state_code` (স্টেটের নাম, যেমন: DHAKA, CHITTAGONG)
+* `license_plate_no` (লাইসেন্স প্লেট নম্বর)
+* `owner_name` (মালিকের নাম)
+
+**আমাদের বাস্তব টেবিলটি (৭টি ডাটা রো সহ):**
+| permit_id | state_code | license_plate_no | owner_name |
+| :--- | :--- | :--- | :--- |
+| P901 | DHAKA | Metro-G-1122 | Rahim |
+| P902 | DHAKA | Metro-H-3344 | Karim |
+| P903 | CHITTAGONG | Metro-G-1122 | Shafi |
+| P904 | SYLHET | Metro-K-5566 | David |
+| P905 | CHITTAGONG | Metro-H-3344 | Eve |
+| P906 | DHAKA | Metro-K-5566 | Frank |
+| P907 | RAJSHAHI | Metro-M-7788 | Grace |
+
+##### টেবিলের নিয়ম বা FDs:
+১. `permit_id` $\rightarrow$ `{state_code, license_plate_no, owner_name}` (পারমিট আইডি জানা থাকলে বাকি সব তথ্য পাওয়া যাবে)
+২. `{state_code, license_plate_no}` $\rightarrow$ `{permit_id, owner_name}` (স্টেট কোড ও প্লেট নম্বর জানা থাকলে গাড়ির মালিক ও পারমিট আইডি জানা যাবে)
+
+##### 🚀 ক্যান্ডিডেট কী বের করার ধাপসমূহ:
+
+* **ধাপ ১: বাম-ডান সূত্র প্রয়োগ (Left-Right Rule)**
+  - বাম পাশের কলামের সেট: `{permit_id, state_code, license_plate_no}`
+  - ডান পাশের কলামের সেট: `{permit_id, state_code, license_plate_no, owner_name}`
+  - **Left Only (শুধুমাত্র বামে)**: কোনো কলাম নেই।
+  - **Right Only (শুধুমাত্র ডানে)**: **`owner_name`** (কারণ এটি কেবল ডানে আছে, কোনো নিয়মের বামে নেই। এটি চাবিতে থাকবে না!)
+  - **Both (উভয় পাশে)**: `permit_id`, `state_code`, `license_plate_no` (এরা ডানে ও বামে উভয় পাশেই আছে)
+
+* **ধাপ ২: ক্যান্ডিডেট কী সনাক্তকরণ (ক্লোজার টেস্ট)**
+  যেহেতু "Left Only" কোনো কলাম নেই, তাই আমরা "Both" সেটের কলামগুলো নিয়ে পরীক্ষা শুরু করব:
+  
+  * **টেস্ট ১ (permit_id-এর ক্লোজার)**:
+    - সাব-ধাপ ১.১: `{permit_id}^+ = {permit_id}`
+    - সাব-ধাপ ১.২: নিয়ম ১ (`permit_id` $\rightarrow$ সব) ব্যবহার করে পাই: `{permit_id}^+ = {permit_id, state_code, license_plate_no, owner_name}`
+    - যেহেতু সব কলাম চলে এসেছে, তাই **`{permit_id}`** একটি **১-কলামের ক্যান্ডিডেট কী**।
+    
+  * **টেস্ট ২ ({state_code, license_plate_no} এর ক্লোজার)**:
+    - সাব-ধাপ ২.১: `{state_code, license_plate_no}^+ = {state_code, license_plate_no}`
+    - সাব-ধাপ ২.২: নিয়ম ২ (`{state_code, license_plate_no}` $\rightarrow$ সব) ব্যবহার করে পাই: `{state_code, license_plate_no}^+ = {state_code, license_plate_no, permit_id, owner_name}`
+    - যেহেতু সব কলাম চলে এসেছে এবং এর কোনো সাবসেট (যেমন: শুধু `state_code` বা শুধু `license_plate_no`) ইউনিক নয়, তাই **`{state_code, license_plate_no}`** একটি **২-কলামের ক্যান্ডিডেট কী**।
+
+* **চূড়ান্ত ক্যান্ডিডেট কীসমূহ**: `{permit_id}` (১ কলাম) এবং `{state_code, license_plate_no}` (২ কলাম)।
+
+---
+
+#### 🌟 উদাহরণ ২: একাধিক ২-কলামের ক্যান্ডিডেট কী থাকার উদাহরণ
+*(একই টেবিলে একাধিক ২-কলামের ক্যান্ডিডেট কী থাকবে, যেমন: (student_id, seminar_id) এবং (student_id, mentor_id))*
+
+ধরি, আমাদের একটি ইউনিভার্সিটির সেমিনার হল বুকিং টেবিল রয়েছে: `seminar_bookings`
+এখানে কলামগুলো হলো:
+* `student_id` (ছাত্রের আইডি)
+* `seminar_id` (সেমিনারের আইডি)
+* `mentor_id` (শিক্ষক বা মেন্টরের আইডি)
+* `room_no` (রুম নম্বর)
+
+**আমাদের বাস্তব টেবিলটি (৭টি ডাটা রো সহ):**
+| student_id | seminar_id | mentor_id | room_no |
+| :--- | :--- | :--- | :--- |
+| S101 | SEM50 | M801 | Room A |
+| S101 | SEM60 | M802 | Room B |
+| S102 | SEM50 | M801 | Room A |
+| S103 | SEM50 | M801 | Room A |
+| S103 | SEM70 | M803 | Room C |
+| S104 | SEM80 | M804 | Room D |
+| S105 | SEM50 | M801 | Room A |
+
+##### টেবিলের নিয়ম বা FDs:
+১. `{student_id, seminar_id}` $\rightarrow$ `{mentor_id, room_no}` (একজন ছাত্র একটি নির্দিষ্ট সেমিনারের জন্য কোন রুমে যাবে এবং কে মেন্টর তা ইউনিক।)
+২. `{student_id, mentor_id}` $\rightarrow$ `{seminar_id, room_no}` (একজন ছাত্রের একজন মেন্টরের সাথে কেবল একটি সেমিনারই থাকতে পারে।)
+৩. `mentor_id` $\rightarrow$ `seminar_id` (প্রতিটি মেন্টর কেবল ১টি নির্দিষ্ট সেমিনারই পরিচালনা করেন।)
+
+##### 🚀 ক্যান্ডিডেট কী বের করার ধাপসমূহ:
+
+* **ধাপ ১: বাম-ডান সূত্র প্রয়োগ**
+  - বাম পাশের কলাম: `student_id`, `seminar_id`, `mentor_id`
+  - ডান পাশের কলাম: `mentor_id`, `room_no`, `seminar_id`
+  - **Left Only (শুধুমাত্র বামে)**: **`student_id`** (কারণ এটি কোনো নিয়মের ডান পাশে নেই। তাই ক্যান্ডিডেট কী-তে `student_id` থাকতেই হবে!)
+  - **Right Only (শুধুমাত্র ডানে)**: **`room_no`** (এটি চাবিতে থাকবে না)
+  - **Both (উভয় পাশে)**: `seminar_id`, `mentor_id`
+
+* **ধাপ ২: ক্যান্ডিডেট কী সনাক্তকরণ (ক্লোজার টেস্ট)**
+  যেহেতু `student_id` অবশ্যই থাকবে, তাই আমরা এর সাথে "Both" কলামগুলো যোগ করে ক্লোজার চেক করব।
+  
+  * **টেস্ট ১ ({student_id, seminar_id} এর ক্লোজার)**:
+    - সাব-ধাপ ১.১: `{student_id, seminar_id}^+ = {student_id, seminar_id}`
+    - সাব-ধাপ ১.২: নিয়ম ১ ব্যবহার করে `mentor_id` ও `room_no` যোগ করি: `{student_id, seminar_id, mentor_id, room_no}`
+    - যেহেতু সব কলাম পাওয়া গেছে, তাই **`{student_id, seminar_id}`** একটি ক্যান্ডিডেট কী।
+    
+  * **টেস্ট ২ ({student_id, mentor_id} এর ক্লোজার)**:
+    - সাব-ধাপ ২.১: `{student_id, mentor_id}^+ = {student_id, mentor_id}`
+    - সাব-ধাপ ২.২: নিয়ম ৩ (`mentor_id` $\rightarrow$ `seminar_id`) ব্যবহার করে `seminar_id` যোগ করি: `{student_id, mentor_id, seminar_id}`
+    - সাব-ধাপ ২.৩: নিয়ম ১ বা ২ ব্যবহার করে `room_no` যোগ করি: `{student_id, mentor_id, seminar_id, room_no}`
+    - সব কলাম পাওয়া গেছে, এবং এর কোনো সাবসেট (যেমন: শুধু `student_id` বা শুধু `mentor_id`) ইউনিক নয়। তাই **`{student_id, mentor_id}`** আরেকটি ক্যান্ডিডেট কী।
+
+* **চূড়ান্ত ক্যান্ডিডেট কীসমূহ**: `{student_id, seminar_id}` এবং `{student_id, mentor_id}` (উভয়ই ২-কলামের চাবি)।
+
+---
+
+#### 🌟 উদাহরণ ৩: ১-কলাম, ২-কলাম এবং ৩-কলামের ক্যান্ডিডেট কী একসাথে থাকার উদাহরণ
+*(একই টেবিলে ১টি ১-কলামের, ১টি ২-কলামের এবং ১টি ৩-কলামের ক্যান্ডিডেট কী একসাথে থাকবে)*
+
+ধরি, আমাদের একটি বড় থিয়েটার বুকিং টেবিল রয়েছে: `theater_bookings`
+এখানে কলামগুলো হলো:
+* `booking_id` (বুকিংয়ের অটো-জেনারেটেড ইউনিক আইডি)
+* `customer_phone` (গ্রাহকের ফোন নম্বর)
+* `booking_date` (বুকিং করার তারিখ)
+* `hall_id` (হল রুমের আইডি, যেমন: Hall 1, Hall 2)
+* `time_slot` (সময়, যেমন: Morning, Evening)
+
+**আমাদের বাস্তব টেবিলটি (৭টি ডাটা রো সহ):**
+| booking_id | customer_phone | booking_date | hall_id | time_slot |
+| :--- | :--- | :--- | :--- | :--- |
+| B701 | 017111111 | 2026-07-28 | Hall 1 | Morning |
+| B702 | 017111111 | 2026-07-29 | Hall 2 | Morning |
+| B703 | 018222222 | 2026-07-28 | Hall 1 | Evening |
+| B704 | 019333333 | 2026-07-28 | Hall 2 | Morning |
+| B705 | 018222222 | 2026-07-29 | Hall 1 | Morning |
+| B706 | 017111111 | 2026-07-29 | Hall 1 | Evening |
+| B707 | 015444444 | 2026-07-28 | Hall 2 | Evening |
+
+##### টেবিলের নিয়ম বা FDs (Business Rules):
+১. `booking_id` $\rightarrow$ `{customer_phone, booking_date, hall_id, time_slot}` (বুকিং আইডি ইউনিক)
+২. `{customer_phone, booking_date}` $\rightarrow$ `{booking_id, hall_id, time_slot}` (ধরি, একজন গ্রাহক দিনে সর্বোচ্চ ১টি বুকিংই করতে পারেন। তাই গ্রাহকের ফোন ও তারিখ মিলে পুরো বুকিং ইউনিক হয়।)
+৩. `{hall_id, booking_date, time_slot}` $\rightarrow$ `{booking_id, customer_phone}` (একটি নির্দিষ্ট ডেটে, নির্দিষ্ট হলে, নির্দিষ্ট টাইমে কেবল ১টি শো-ই চলতে পারে। তাই এই তিনটি কলাম মিলে বুকিং ইউনিক হয়।)
+
+##### 🚀 ক্যান্ডিডেট কী বের করার ধাপসমূহ:
+
+* **ধাপ ১: বাম-ডান সূত্র প্রয়োগ**
+  - বাম পাশের কলাম: `booking_id`, `customer_phone`, `booking_date`, `hall_id`, `time_slot`
+  - ডান পাশের কলাম: `customer_phone`, `booking_date`, `hall_id`, `time_slot`, `booking_id`
+  - **Left Only (শুধুমাত্র বামে)**: কোনো কলাম নেই।
+  - **Right Only (শুধুমাত্র ডানে)**: কোনো কলাম নেই।
+  - **Both (উভয় পাশে)**: সব কলামই বাম এবং ডান উভয় পাশে আছে।
+
+* **ধাপ ২: ক্যান্ডিডেট কী সনাক্তকরণ (ক্লোজার টেস্ট)**
+
+  * **টেস্ট ১ (booking_id-এর ক্লোজার)**:
+    - সাব-ধাপ ১.১: `{booking_id}^+ = {booking_id}`
+    - সাব-ধাপ ১.২: নিয়ম ১ ব্যবহার করে পাই: `{booking_id}^+ = {booking_id, customer_phone, booking_date, hall_id, time_slot}`
+    - যেহেতু সব কলাম পাওয়া গেছে, তাই **`{booking_id}`** একটি **১-কলামের ক্যান্ডিডেট কী**।
+
+  * **টেস্ট ২ ({customer_phone, booking_date} এর ক্লোজার)**:
+    - সাব-ধাপ ২.১: `{customer_phone, booking_date}^+ = {customer_phone, booking_date}`
+    - সাব-ধাপ ২.২: নিয়ম ২ ব্যবহার করে পাই: `{customer_phone, booking_date}^+ = {customer_phone, booking_date, booking_id, hall_id, time_slot}`
+    - সব কলাম পাওয়া গেছে এবং এর কোনো অংশ (যেমন: শুধু ফোন বা শুধু ডেট) ইউনিক নয়। তাই **`{customer_phone, booking_date}`** একটি **২-কলামের ক্যান্ডিডেট কী**।
+
+  * **টেস্ট ৩ ({hall_id, booking_date, time_slot} এর ক্লোজার)**:
+    - সাব-ধাপ ৩.১: `{hall_id, booking_date, time_slot}^+ = {hall_id, booking_date, time_slot}`
+    - সাব-ধাপ ৩.২: নিয়ম ৩ ব্যবহার করে পাই: `{hall_id, booking_date, time_slot}^+ = {hall_id, booking_date, time_slot, booking_id, customer_phone}`
+    - সব কলাম পাওয়া গেছে এবং এর কোনো সাবসেট (যেমন: শুধু হল ও ডেট, অথবা হল ও টাইম স্লট) ইউনিক নয়। তাই **`{hall_id, booking_date, time_slot}`** একটি **৩-কলামের ক্যান্ডিডেট কী**।
+
+* **চূড়ান্ত ক্যান্ডিডেট কীসমূহ**: 
+  1. `{booking_id}` (১ কলাম)
+  2. `{customer_phone, booking_date}` (২ কলাম)
+  3. `{hall_id, booking_date, time_slot}` (৩ কলাম)
+
+---
+
+---
+
 #### ৩. Primary Key (প্রাইমারি কী)
 * **সংজ্ঞা**: ক্যান্ডিডেট কী-গুলোর মধ্য থেকে ডাটাবেস ডিজাইনার টেবিলের প্রধান আইডেন্টিফায়ার হিসেবে যাকে বেছে নেন, সেটাই হলো প্রাইমারি কী। এটি কখনো `NULL` (খালি) হতে পারে না এবং অবশ্যই ইউনিক হতে হবে।
 * **আমাদের উদাহরণ**:
