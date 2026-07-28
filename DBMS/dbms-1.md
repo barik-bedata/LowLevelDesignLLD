@@ -1151,9 +1151,13 @@ The process of structuring a relational database to minimize data redundancy and
 | E03 | Shafi | D02 | IT |
 
 * **এখানে সমস্যা (Transitive Dependency)**:
-  - `emp_id` $\rightarrow$ `dept_id` (কর্মচারী আইডি দিয়ে ডিপার্টমেন্ট আইডি জানা যায়)
-  - `dept_id` $\rightarrow$ `dept_name` (ডিপার্টমেন্ট আইডি দিয়ে ডিপার্টমেন্টের নাম জানা যায়)
-  - সুতরাং, `emp_id` $\rightarrow$ `dept_name` (যা একটি ট্রানজিটিভ ডিপেনডেন্সি)।
+  - এখানে একমাত্র ক্যান্ডিডেট কী হলো **`{emp_id}`** (যা Prime Attribute)।
+  - বাকি কলামগুলো যেমন: `dept_id` এবং `dept_name` হলো **Non-prime Attributes** (ক্যান্ডিডেট কী-এর অংশ নয়)।
+  - আমাদের এফডি (Functional Dependencies) খেয়াল করুন:
+    1. `emp_id` $\rightarrow$ `dept_id` (Prime $\rightarrow$ Non-prime)
+    2. `dept_id` $\rightarrow$ `dept_name` (Non-prime $\rightarrow$ Non-prime)
+  - এখানে `dept_name` সরাসরি প্রাইমারি কী `emp_id`-এর ওপর নির্ভর না করে, অন্য একটি নন-প্রাইম কলাম `dept_id`-এর ওপর নির্ভর করছে।
+  - যার ফলে ট্রানজিটিভলি (পরোক্ষভাবে): `emp_id` $\rightarrow$ `dept_id` $\rightarrow$ `dept_name` সম্পর্ক তৈরি হচ্ছে। এটিই হলো **Transitive Dependency** (যা ৩NF-এ সম্পূর্ণ নিষিদ্ধ)।
 
 #### ৩NF অনুযায়ী টেবিল বিভক্তিকরণ (Solution):
 ১. `employees` টেবিল:
