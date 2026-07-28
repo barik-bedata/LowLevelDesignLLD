@@ -1367,6 +1367,8 @@ The process of structuring a relational database to minimize data redundancy and
 * **মূল শর্ত**: এটি ৩NF-এর আরও শক্তিশালী রূপ (কখনও একে 3.5NF বলা হয়)। প্রতি কার্যকরী নির্ভরতা (Functional Dependency) $X \rightarrow Y$ এর ক্ষেত্রে, বাম পাশের কলাম $X$ অবশ্যই একটি **সুপার কী (Super Key)** হতে হবে।
   * **ইংরেজি স্ট্যান্ডার্ড সংজ্ঞা (Official English Definition)**: 
     > **"A relation schema R is in BCNF if, for EVERY non-trivial functional dependency $X \rightarrow Y$ that holds in R, $X$ is a superkey of R."**
+  * ⚠️ **গুরুত্বপূর্ণ শব্দ - "For EVERY" (প্রতিটি)**: ৩NF-এর মতোই BCNF-এও একটি টেবিলে বিদ্যমান **প্রতিটি (EVERY)** নন-ট্রিভিয়াল ডিপেন্ডেন্সিকে চেক করতে হবে। শুধু একটি নির্দিষ্ট কলাম বা সম্পর্ক চেক করে টেবিলকে BCNF বলা যাবে না। যদি একটি সম্পর্কও BCNF-এর শর্ত (বাম পাশ সুপার কী) অমান্য করে, তবে পুরো টেবিলটিই অবৈধ হয়ে যাবে।
+  * <span style="color:red; font-weight:bold;">BCNF-এর definition অনুযায়ী relation-এ যতগুলো Functional Dependency hold করে, সবগুলোর জন্য condition satisfy করতে হবে।</span>
   * 💡 **নোট (Trivial vs Non-Trivial Dependency)**: 
     - চলুন একটি টেবিল দিয়ে বিষয়টি প্র্যাকটিক্যালি বুঝি:
       | emp_id | emp_name | dept |
