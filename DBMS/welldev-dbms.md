@@ -151,14 +151,54 @@ WHERE CONSTRAINT_SCHEMA = 'your_database_name'
 ```
 
 **Scenario B: Test if a specific column's current data is unique**
-You check if the count of distinct values equals the total count of rows:
+You check if the count of distinct values equals the total count of rows.
+
+#### Input Table (`employees`)
+এখানে আমাদের টেস্ট ডেটাসেট (৭টি রো) দেওয়া হলো, যেখানে `id` কলামটি ইউনিক কিন্তু `phone_number` কলামটিতে ডুপ্লিকেট ভ্যালু আছে (`01722222222` দুইবার এসেছে):
+
+| id | name | phone_number |
+| :--- | :--- | :--- |
+| 1 | Alice | 01711111111 |
+| 2 | Bob | 01722222222 |
+| 3 | Charlie | 01733333333 |
+| 4 | David | 01722222222 |
+| 5 | Eve | 01755555555 |
+| 6 | Frank | 01766666666 |
+| 7 | Grace | 01777777777 |
+
+---
+
+#### উদাহরণ ১: ইউনিক কলামের ক্ষেত্রে (`id` কলাম টেস্ট করা)
 ```sql
 SELECT CASE 
-    WHEN COUNT(DISTINCT column_name) = COUNT(*) THEN 'Column is Unique'
+    WHEN COUNT(DISTINCT id) = COUNT(*) THEN 'Column is Unique'
     ELSE 'Column has Duplicates'
 END AS uniqueness_status
-FROM table_name;
+FROM employees;
 ```
+* **ব্যাখ্যা**: এখানে মোট রো বা `COUNT(*)` = ৭টি, এবং ইউনিক `id`-এর সংখ্যা `COUNT(DISTINCT id)` = ৭টি। যেহেতু দুটির মান সমান ($7 = 7$), তাই কলামটি ইউনিক।
+
+**Output Table (উদাহরণ ১):**
+| uniqueness_status |
+| :--- |
+| Column is Unique |
+
+---
+
+#### উদাহরণ ২: ডুপ্লিকেট থাকা কলামের ক্ষেত্রে (`phone_number` কলাম টেস্ট করা)
+```sql
+SELECT CASE 
+    WHEN COUNT(DISTINCT phone_number) = COUNT(*) THEN 'Column is Unique'
+    ELSE 'Column has Duplicates'
+END AS uniqueness_status
+FROM employees;
+```
+* **ব্যাখ্যা**: এখানে মোট রো বা `COUNT(*)` = ৭টি। কিন্তু ইউনিক ফোন নম্বরের সংখ্যা `COUNT(DISTINCT phone_number)` = ৬টি (কারণ `01722222222` ডুপ্লিকেট হওয়ায় ডিস্টিন্ট কাউন্টে ১ বার ধরা হয়েছে)। যেহেতু মান সমান নয় ($6 \neq 7$), তাই এটি ডুপ্লিকেট নির্দেশ করে।
+
+**Output Table (উদাহরণ ২):**
+| uniqueness_status |
+| :--- |
+| Column has Duplicates |
 
 ---
 
