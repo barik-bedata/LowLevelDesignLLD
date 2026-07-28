@@ -356,9 +356,57 @@ DELETE FROM departments WHERE dept_id = 2;
 ---
 
 #### ৭. Foreign Key (ফরেন কী)
-* **সংজ্ঞা**: একটি টেবিলের প্রাইমারি কী যখন অন্য কোনো টেবিলে ডেটার মধ্যে রিলেশনশিপ তৈরি করার জন্য কলাম হিসেবে ব্যবহৃত হয়, তখন তাকে ফরেন কী বলে। এটি রিলেশনাল ডাটাবেসের ডেটার শুদ্ধতা (Referential Integrity) রক্ষা করে।
-* **আমাদের উদাহরণ**:
-  - উপরোক্ত `registrations` টেবিলের **`student_id`** কলামটি হলো একটি ফরেন কী, কারণ এটি মূল `students` টেবিলের প্রাইমারি কী `student_id`-কে রেফার করছে।
+* **সংজ্ঞা**: একটি টেবিলের প্রাইমারি কী যখন অন্য কোনো টেবিলে রিলেশনশিপ তৈরি করার জন্য কলাম হিসেবে ব্যবহৃত হয়, তখন তাকে ফরেন কী বলে। এটি রিলেশনাল ডাটাবেসের ডেটার শুদ্ধতা (Referential Integrity) রক্ষা করে, অর্থাৎ ফরেন কী কলামে এমন কোনো মান ইনসার্ট করা যায় না যা প্যারেন্ট টেবিলের প্রাইমারি কী-তে নেই।
+
+* 📊 **PK-FK রিলেশনশিপ ডায়াগ্রাম (Visual Representation)**:
+  
+  ![Primary Key to Foreign Key Relationship](resources/pk_fk_relationship.png)
+
+---
+
+### বিস্তারিত উদাহরণ (Detailed Examples)
+
+নিচে দুটি বাস্তব উদাহরণের মাধ্যমে প্রাইমারি কী (PK) এবং ফরেন কী (FK)-এর সম্পর্ক দেখানো হলো:
+
+#### উদাহরণ ১: Student (ছাত্র) এবং Enrollments (কোর্স রেজিস্ট্রেশন)
+* **`students` টেবিল (Parent)**: এখানে প্রতিটি ছাত্রের ইউনিক আইডি `student_id` হলো **Primary Key (PK)**।
+* **`enrollments` টেবিল (Child)**: একজন ছাত্র কোন কোন কোর্সে এনরোল করেছে তা এখানে থাকবে। এই টেবিলের `student_id` হলো **Foreign Key (FK)** যা `students` টেবিলের `student_id`-কে নির্দেশ করে।
+
+**প্যারেন্ট টেবিল (`students`):**
+| student_id (PK) | first_name | last_name | email |
+| :--- | :--- | :--- | :--- |
+| **S101** | Rahim | Rahman | rahim@test.com |
+| **S102** | Karim | Ahmed | karim@test.com |
+
+**চাইল্ড টেবিল (`enrollments`):**
+| enrollment_id (PK) | student_id (FK) | course_id | grade |
+| :--- | :--- | :--- | :--- |
+| 1 | **S101** | CSE101 | A |
+| 2 | **S101** | CSE102 | B+ |
+| 3 | **S102** | CSE101 | A- |
+
+> 💡 **নোট**: `enrollments` টেবিলের `student_id` কলামে এমন কোনো আইডি (যেমন: `S105`) ইনসার্ট করা যাবে না যা `students` টেবিলে নেই। করলে ডাটাবেস **Referential Integrity Constraint Violation** এরর দেখাবে।
+
+---
+
+#### উদাহরণ ২: Product (পণ্য) এবং Orders (অর্ডার)
+* **`products` টেবিল (Parent)**: প্রতিটি পণ্যের ইউনিক আইডি `product_id` হলো **Primary Key (PK)**।
+* **`orders` টেবিল (Child)**: কোনো কাস্টমার কোন পণ্য কতটি অর্ডার করেছে তা এই টেবিলে স্টোর করা হয়। এই টেবিলের `product_id` কলামটি হলো **Foreign Key (FK)** যা `products` টেবিলকে রেফার করে।
+
+**প্যারেন্ট টেবিল (`products`):**
+| product_id (PK) | product_name | category | price |
+| :--- | :--- | :--- | :--- |
+| **P501** | iPhone 15 | Electronics | 120000 |
+| **P502** | Keyboard | Accessories | 3500 |
+
+**চাইল্ড টেবিল (`orders`):**
+| order_id (PK) | product_id (FK) | quantity | order_date |
+| :--- | :--- | :--- | :--- |
+| 10001 | **P501** | 1 | 2026-07-28 |
+| 10002 | **P502** | 2 | 2026-07-28 |
+| 10003 | **P501** | 1 | 2026-07-28 |
+
+> 💡 **নোট**: এখানে `orders` টেবিলের `product_id` কলামটি প্যারেন্ট টেবিলের প্রোডাক্টের সত্যতা নিশ্চিত করে। যদি কোনো প্রোডাক্টের আইডি `products` টেবিল থেকে মুছে ফেলা হয়, তবে চাইল্ড টেবিলের অর্ডারগুলোর ওপর ক্যাসকেড অপারেশন (যেমন: `ON DELETE CASCADE` বা `SET NULL`) কার্যকর হয়।
 
 ---
 
