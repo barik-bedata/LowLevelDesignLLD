@@ -44,7 +44,24 @@ LIMIT count;
 ### Q2. Write a SQL query to show all the duplicate rows in a table.
 Suppose we have a table `users` and we want to find duplicate records based on the `email` column.
 
+#### Input Table (`users`)
+Here is our test dataset consisting of 7 rows where `bob@example.com` (appears 2 times) and `david@example.com` (appears 3 times) are duplicates:
+
+| id | name | email |
+| :--- | :--- | :--- |
+| 1 | Alice | alice@example.com |
+| 2 | Bob | bob@example.com |
+| 3 | Charlie | charlie@example.com |
+| 4 | Bob Smith | bob@example.com |
+| 5 | David | david@example.com |
+| 6 | David Miller | david@example.com |
+| 7 | David A. | david@example.com |
+
+---
+
 **Method 1: Find duplicates with count**
+
+This approach groups by the target column and counts rows, returning only the duplicate values and their counts.
 ```sql
 SELECT email, COUNT(*) as occurrence_count
 FROM users
@@ -52,7 +69,17 @@ GROUP BY email
 HAVING COUNT(*) > 1;
 ```
 
+#### Output Table (Method 1)
+| email | occurrence_count |
+| :--- | :--- |
+| bob@example.com | 2 |
+| david@example.com | 3 |
+
+---
+
 **Method 2: Display the full rows of duplicate entries**
+
+This approach uses a subquery to select all columns for rows whose target value matches any of the duplicates.
 ```sql
 SELECT * 
 FROM users 
@@ -64,6 +91,15 @@ WHERE email IN (
 )
 ORDER BY email;
 ```
+
+#### Output Table (Method 2)
+| id | name | email |
+| :--- | :--- | :--- |
+| 2 | Bob | bob@example.com |
+| 4 | Bob Smith | bob@example.com |
+| 5 | David | david@example.com |
+| 6 | David Miller | david@example.com |
+| 7 | David A. | david@example.com |
 
 ---
 
