@@ -1485,9 +1485,25 @@ The process of structuring a relational database to minimize data redundancy and
 | S103 | Mr. Noman |
 
 ### Denormalization
-* **Definition:** Intentionally introducing redundancy into a database by combining tables to reduce costly `JOIN` operations.
-* **Trade-off:** Faster Read Queries vs Slower Writes & Higher Risk of Data Inconsistency.
-* **Common Scenario:** Read-heavy analytics (OLAP) systems and data warehouses.
+**Denormalization** হলো ডেটাবেস নরমালইজেশনের ঠিক উল্টো প্রক্রিয়া। যেখানে নরমালইজেশনে আমরা ডেটার পুনরাবৃত্তি (Redundancy) কমানোর জন্য টেবিলগুলোকে ভেঙে ছোট ছোট টুকরো করি, সেখানে ডিনরমালইজেশনে আমরা **ইচ্ছেকৃতভাবে ডেটার পুনরাবৃত্তি (Redundancy) ঘটাই বা টেবিলগুলোকে জোড়া লাগাই**।
+
+* **কেন করা হয় (The "Why")?**: 
+  নরমালইজেশনের ফলে ডেটা অনেকগুলো টেবিলে ছড়িয়ে ছিটিয়ে থাকে। ফলে যখন কোনো কোয়েরি দিয়ে ডেটা পড়ার (Read) প্রয়োজন হয়, তখন অনেকগুলো টেবিলকে `JOIN` করতে হয়। বড় ডেটাবেসে একাধিক টেবিল `JOIN` করা অত্যন্ত সময়সাপেক্ষ এবং ব্যয়বহুল (Costly)। ডিনরমালইজেশনের মাধ্যমে ডেটাগুলো আগে থেকেই একত্রে বা কাছাকাছি রাখা হয়, যাতে `JOIN` করা ছাড়াই খুব দ্রুত (Faster Read) ডেটা তুলে আনা যায়।
+
+* **Trade-off (কী পাচ্ছি আর কী হারাচ্ছি)**:
+  - **সুবিধা (Pros)**: `JOIN` করতে হয় না বলে Read Query বা `SELECT` অপারেশন অত্যন্ত দ্রুত হয়।
+  - **অসুবিধা (Cons)**: ডেটার ডুপ্লিকেশন বা রিডান্ডেন্সি তৈরি হয়। ফলে, ডেটা ইনসার্ট/আপডেট/ডিলিট (Write) করা ধীরগতির হয়ে যায়। একই ডেটা একাধিক জায়গায় থাকায় **Data Inconsistency** বা ডেটার অমিল হওয়ার ঝুঁকি তৈরি হয়।
+
+* **কখন ব্যবহার করা হয় (Common Scenarios)**:
+  - **OLAP (Online Analytical Processing) বা Data Warehousing**: যেসব সিস্টেমে ডেটা নতুন করে ইনসার্ট বা আপডেট প্রায় হয়ই না, বরং সারাদিন শুধু রিপোর্ট তৈরি বা ডেটা পড়ার (Read-heavy) কাজ হয়।
+  - যখন অ্যাপ্লিকেশনটি এতটাই Read-heavy যে `JOIN` এর খরচ ইউজার এক্সপেরিয়েন্স নষ্ট করছে।
+
+* **প্র্যাকটিক্যাল উদাহরণ (Practical Example)**:
+  ধরি আমাদের দুটি নরমালাইজড টেবিল আছে: `users` এবং `addresses`।
+  - **Normalized**: ইউজার প্রোফাইল পেজ লোড করার সময় `users` এবং `addresses` টেবিল `JOIN` করে ইউজারের ঠিকানা দেখাতে হয়।
+  - **Denormalized**: আমরা `users` টেবিলের ভেতরেই `city`, `zip_code` কলামগুলো যোগ করে দিলাম। এতে ইউজারের ঠিকানা আপডেট করার সময় হয়তো একটু বেশি সময় লাগবে, কিন্তু প্রতিবার প্রোফাইল লোড করার সময় আর `JOIN` করতে হবে না, ডেটা সেকেন্ডে লোড হবে!
+
+  আরেকটি উদাহরণ: ই-কমার্স সিস্টেমে `orders` এবং `order_items` টেবিল থাকে। প্রতি অর্ডারের মোট দাম (Total Price) বের করতে হলে `order_items` টেবিলের সব আইটেমের দাম যোগ (SUM) করতে হয়। এটি একটি ভারী অপারেশন। এর বদলে আমরা যদি `orders` টেবিলেই একটি `total_amount` কলাম রেখে দিই (যাতে করে আগে থেকেই হিসাব করা থাকে), তবে এটি হবে ডিনরমালইজেশন। এতে Read ফার্স্ট হবে, কিন্তু প্রতিবার নতুন আইটেম অ্যাড বা ডিলিট হলে `total_amount` আপডেট করার বাড়তি ঝামেলা পোহাতে হবে।
 
 ---
 
