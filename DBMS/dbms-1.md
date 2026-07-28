@@ -1498,12 +1498,37 @@ The process of structuring a relational database to minimize data redundancy and
   - **OLAP (Online Analytical Processing) বা Data Warehousing**: যেসব সিস্টেমে ডেটা নতুন করে ইনসার্ট বা আপডেট প্রায় হয়ই না, বরং সারাদিন শুধু রিপোর্ট তৈরি বা ডেটা পড়ার (Read-heavy) কাজ হয়।
   - যখন অ্যাপ্লিকেশনটি এতটাই Read-heavy যে `JOIN` এর খরচ ইউজার এক্সপেরিয়েন্স নষ্ট করছে।
 
-* **প্র্যাকটিক্যাল উদাহরণ (Practical Example)**:
-  ধরি আমাদের দুটি নরমালাইজড টেবিল আছে: `users` এবং `addresses`।
-  - **Normalized**: ইউজার প্রোফাইল পেজ লোড করার সময় `users` এবং `addresses` টেবিল `JOIN` করে ইউজারের ঠিকানা দেখাতে হয়।
-  - **Denormalized**: আমরা `users` টেবিলের ভেতরেই `city`, `zip_code` কলামগুলো যোগ করে দিলাম। এতে ইউজারের ঠিকানা আপডেট করার সময় হয়তো একটু বেশি সময় লাগবে, কিন্তু প্রতিবার প্রোফাইল লোড করার সময় আর `JOIN` করতে হবে না, ডেটা সেকেন্ডে লোড হবে!
+* **৩টি প্র্যাকটিক্যাল উদাহরণ (3 Practical Examples of Denormalization)**:
 
-  আরেকটি উদাহরণ: ই-কমার্স সিস্টেমে `orders` এবং `order_items` টেবিল থাকে। প্রতি অর্ডারের মোট দাম (Total Price) বের করতে হলে `order_items` টেবিলের সব আইটেমের দাম যোগ (SUM) করতে হয়। এটি একটি ভারী অপারেশন। এর বদলে আমরা যদি `orders` টেবিলেই একটি `total_amount` কলাম রেখে দিই (যাতে করে আগে থেকেই হিসাব করা থাকে), তবে এটি হবে ডিনরমালইজেশন। এতে Read ফার্স্ট হবে, কিন্তু প্রতিবার নতুন আইটেম অ্যাড বা ডিলিট হলে `total_amount` আপডেট করার বাড়তি ঝামেলা পোহাতে হবে।
+  **উদাহরণ ১: Pre-computed Aggregates (আগে থেকেই হিসাব করে রাখা)**
+  ই-কমার্স সিস্টেমে একটি অর্ডারের মোট দাম বের করতে `orders` এবং `order_items` টেবিল `JOIN` করে SUM বের করতে হয়।
+  * **Normalized (৩NF)**: 
+    - `orders(order_id, date)`
+    - `order_items(item_id, order_id, price)`
+    - *সমস্যা*: প্রতিবার ইউজার তার "My Orders" পেজে গেলে সবগুলো আইটেমের দাম যোগ করে দেখাতে হয়। এটি খুবই স্লো।
+  * **Denormalized**: 
+    - `orders(order_id, date, total_amount)` (এখানে `total_amount` কলামটি এক্সট্রা যোগ করা হলো)
+    - *ফলাফল*: Read খুবই ফাস্ট হবে। তবে কোনো আইটেম অ্যাড/রিমুভ হলে `total_amount` ম্যানুয়ালি আপডেট (Write) করতে হবে।
+
+  **উদাহরণ ২: Storing Joined Data (JOIN এড়ানোর জন্য ডেটা ডুপ্লিকেট করা)**
+  একটি ব্লগিং ওয়েবসাইটে হোমপেজে লেটেস্ট পোস্টগুলোর সাথে লেখকের নাম (Author Name) দেখাতে হয়।
+  * **Normalized (৩NF)**: 
+    - `users(user_id, name)`
+    - `posts(post_id, user_id, title)`
+    - *সমস্যা*: হোমপেজে ১০০টি পোস্ট দেখাতে হলে `posts` এর সাথে `users` টেবিল বারবার `JOIN` করতে হবে।
+  * **Denormalized**: 
+    - `posts(post_id, user_id, author_name, title)` (`author_name` কলামটি এখানে ডুপ্লিকেট করা হলো)
+    - *ফলাফল*: হোমপেজ লোড হবে চোখের পলকে (No JOIN)। তবে ইউজার যদি তার নাম পরিবর্তন করে, তবে তার লেখা হাজার হাজার পোস্টের টেবিলে গিয়ে `author_name` আপডেট করতে হবে।
+
+  **উদাহরণ ৩: Flattening One-to-One Relationships (আলাদা টেবিলকে এক করে ফেলা)**
+  ইউজারের বেসিক প্রোফাইল এবং তার ঠিকানার (Address) জন্য আলাদা টেবিল।
+  * **Normalized (৩NF)**: 
+    - `users(user_id, email, phone)`
+    - `addresses(user_id, city, zip_code)`
+    - *সমস্যা*: প্রোফাইল পেজ লোড করতে সবসময় ২টি টেবিল `JOIN` লাগে।
+  * **Denormalized**: 
+    - `users(user_id, email, phone, city, zip_code)` (ঠিকানার কলামগুলো মেইন টেবিলেই নিয়ে আসা হলো)
+    - *ফলাফল*: টেবিলের সাইজ (Columns) বড় হয়ে গেল এবং হয়তো কিছু ইউজারের ঠিকানা না থাকলে NULL স্পেস নষ্ট হবে, কিন্তু প্রোফাইল রিড (Read) স্পিড অনেক বেড়ে যাবে।
 
 ---
 
