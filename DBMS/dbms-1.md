@@ -1642,10 +1642,10 @@ ON e1.email = e2.email AND e1.id > e2.id;
 ## 9. Transactions, ACID Properties, Locks, Views & Triggers
 
 ### A. ACID Properties
-* **Atomicity:** "All or Nothing". Executed via WAL (Write-Ahead Logging) and undo logs.
-* **Consistency:** Preserves database invariants before and after transactions.
-* **Isolation:** Controls visibility of concurrent transactions.
-* **Durability:** Ensures committed data survives system crashes via redo logs.
+* **Atomicity (A - অখণ্ডতা):** "All or Nothing"। ট্রানজেকশনের ভেতরের সবগুলো কাজ সফল হতে হবে, অথবা যেকোনো একটি কাজ ফেইল করলে পুরো ট্রানজেকশনটিই বাতিল বা রোলব্যাক (Rollback) হবে।
+* **Consistency (C - ধারাবাহিকতা বা বৈধতা):** ট্রানজেকশনের আগে এবং পরে ডেটাবেসের সমস্ত রুলস ঠিক থাকতে হবে। অর্থাৎ Primary Key, Foreign Key, Check Constraints, ডাটা টাইপ, Max/Min limit বা ব্যালেন্স নেগেটিভ না হওয়া—এই সব লজিক মেইনটেইন হতে হবে। যদি কোনো রুল ভঙ্গ হয়, তবে ট্রানজেকশন বাতিল হবে। 
+* **Isolation (I - বিচ্ছিন্নতা):** একাধিক ট্রানজেকশন একসাথে (Concurrent) চললেও তারা একে অপরের কাজ দেখতে পাবে না বা একে অপরের কাজে বাধা দেবে না। প্রতিটি ট্রানজেকশন এমনভাবে চলবে যেন সে একাই সিস্টেমে কাজ করছে।
+* **Durability (D - স্থায়িত্ব):** ট্রানজেকশন একবার সফলভাবে 'Commit' হয়ে গেলে, এরপর কারেন্ট চলে গেলেও বা সিস্টেম ক্র্যাশ করলেও ডেটা সেভ থাকবে (Redo logs এর মাধ্যমে)।
 
 ### B. Transaction Isolation Levels & Concurrency Anomalies
 
