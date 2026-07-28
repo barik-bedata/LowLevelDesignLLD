@@ -1799,6 +1799,17 @@ An extension of CAP that accounts for normal operation state (when no network pa
                      (Mongo, Cass)   (Redis, Memcached)
 ```
 
+### 🏢 Use Cases: কোথায় কোনটি ব্যবহার করবেন?
+
+| SQL উপযুক্ত (Best for SQL) | NoSQL উপযুক্ত (Best for NoSQL) |
+| :--- | :--- |
+| • E-commerce order/payment | • Social media feed |
+| • HR system | • IoT sensor data |
+| • Banking | • Real-time chat |
+| • Inventory management | • Analytics dashboard |
+| • Booking system | • Content CMS |
+| • CRM | • Caching/session |
+
 ---
 
 ## 16. SQL Injection (SQLi) & Security
