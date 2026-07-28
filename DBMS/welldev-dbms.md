@@ -128,15 +128,14 @@ HAVING COUNT(*) > 1;
 
 ### Q4. What is the difference between `DELETE`, `TRUNCATE`, and `DROP` in SQL?
 
-| Feature | `DELETE` | `TRUNCATE` | `DROP` |
+| বৈশিষ্ট্য (Feature) | `DELETE` | `TRUNCATE` | `DROP` |
 | :--- | :--- | :--- | :--- |
-| **Command Category** | DML (Data Manipulation Language) | DDL (Data Definition Language) | DDL (Data Definition Language) |
-| **Action** | Deletes specific or all rows. | Deletes all rows by deallocating pages. | Completely deletes table schema & data. |
-| **`WHERE` Clause** | Supported (allows partial deletion). | Not supported. | Not supported. |
-| **Speed** | Slow (deletes row-by-row and logs each). | Very Fast (deletes data pages directly). | Immediate (removes table metadata). |
-| **Triggers** | Fires active `DELETE` triggers. | Does not fire triggers. | Does not fire triggers. |
-| **Rollback** | Can be rolled back inside a transaction. | Can be rolled back in some DBs (PG, SQL Server), not in MySQL. | Cannot be rolled back (except in transactional DDL). |
-| **Index Resets** | Keeps auto-increment values. | Resets auto-increment to initial value. | Removes table structure and index definitions completely. |
+| **কমান্ডের ধরণ (Type)** | DML (Data Manipulation Language) | DDL (Data Definition Language) | DDL (Data Definition Language) |
+| **কাজ (Action)** | টেবিল ঠিক রেখে ভেতরের নির্দিষ্ট বা সব রো (rows) ডিলেট করে। | টেবিল ঠিক রেখে ভেতরের সব রো (rows) একবারে ডিলেট করে। | সম্পূর্ণ টেবিলের স্ট্রাকচার (schema), ইনডেক্স এবং ডেটা চিরতরে মুছে ফেলে। |
+| **`WHERE` ক্লজ** | **সাপোর্ট করে** (শর্ত দিয়ে নির্দিষ্ট রো ডিলেট করা যায়)। | **সাপোর্ট করে না** (সব ডেটা একসাথে ডিলেট হয়)। | **সাপোর্ট করে না** (সম্পূর্ণ টেবিলই মুছে যায়)। |
+| **গতি (Performance)** | **ধীরগতির** (প্রতিটি রো এক এক করে ডিলেট করে এবং ট্রানজেকশন লগ তৈরি করে)। | **অত্যন্ত দ্রুতগতির** (সরাসরি ডেটা পেজগুলো খালি করে দেয়)। | **তাত্ক্ষণিক** (সরাসরি ডেটাবেস মেটাডেটা থেকে টেবিলটি মুছে দেয়)। |
+| **ট্রিগার (Triggers)** | **ট্রিগার রান হয়** (প্রতিটি রো ডিলেটের জন্য `DELETE` ট্রিগার ফায়ার হয়)। | **ট্রিগার রান হয় না** (কোনো ট্রিগার ফায়ার হয় না)। | **ট্রিগার রান হয় না** (কোনো ট্রিগার ফায়ার হয় না)। |
+| **রোলব্যাক (Rollback)** | **সবসময় সম্ভব** (রোলব্যাক করে ডেটা সম্পূর্ণ ফেরত আনা যায়)। | **সাধারণত সম্ভব নয়** (MySQL/Oracle-এ অটো-কমিট হওয়ায় সম্ভব নয়। তবে Postgres/SQL Server-এ সম্ভব)। | **সাধারণত সম্ভব নয়** (টেবিলটিই মুছে যায়। তবে Postgres-এ ট্রানজেকশনের ভেতর সম্ভব)। |
 
 ---
 
