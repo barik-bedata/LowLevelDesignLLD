@@ -566,18 +566,253 @@ The process of structuring a relational database to minimize data redundancy and
         [ Boyce-Codd Normal Form ]
 ```
 
-#### Normal Forms Explained:
-1. **1NF (First Normal Form):**
-   * Each cell contains atomic (indivisible) values.
-   * No repeating groups or arrays stored in a single column.
-2. **2NF (Second Normal Form):**
-   * Must be in 1NF.
-   * Eliminates **Partial Dependency** (No non-prime attribute should depend on a subset of any candidate key).
-3. **3NF (Third Normal Form):**
-   * Must be in 2NF.
-   * Eliminates **Transitive Dependency** (Non-prime attributes must not depend on other non-prime attributes; $A \rightarrow B$ and $B \rightarrow C$).
-4. **BCNF (Boyce-Codd Normal Form):**
-   * Advanced version of 3NF. For any functional dependency $X \rightarrow Y$, $X$ must be a Super Key.
+#### Normal Forms & Database Anomalies (নরমাল ফর্ম ও ডাটাবেস অ্যানোমালি):
+
+ডাটাবেস ডিজাইনে ডেটার পুনরাবৃত্তি (Redundancy) কমাতে এবং ডাটাবেসকে সুরক্ষিত ও অসঙ্গতিহীন রাখতে নরমালইজেশন ব্যবহার করা হয়। এর মূল লক্ষ্য হলো বিভিন্ন **অ্যানোমালি (Anomalies) বা সমস্যা** দূর করা।
+
+---
+
+### ডাটাবেস অ্যানোমালি (Database Anomalies)
+যখন ডাটাবেসের টেবিল সঠিকভাবে ডিজাইন করা থাকে না, তখন ডেটা নিয়ে কাজ করতে গেলে ৩ ধরনের সমস্যা দেখা দেয়। একে ডাটাবেস অ্যানোমালি বলে।
+
+ধরি আমাদের একটি `student_courses` টেবিল রয়েছে:
+| student_id (Composite PK) | course_code (Composite PK) | student_name | advisor_name | advisor_room |
+| :--- | :--- | :--- | :--- | :--- |
+| S101 | CSE101 | Rahim | Dr. Kamal | Room 401 |
+| S101 | CSE102 | Rahim | Dr. Kamal | Room 401 |
+| S102 | CSE101 | Karim | Dr. Zaman | Room 402 |
+| S103 | CSE101 | Shafi | Dr. Kamal | Room 401 |
+| S104 | CSE103 | Shafi | Dr. Kamal | Room 401 |
+| S105 | CSE104 | David | Dr. Zaman | Room 402 |
+| S106 | CSE105 | Eve | Dr. Noman | Room 403 |
+
+#### ১. Insertion Anomaly (ইনসার্ট অ্যানোমালি):
+* **সমস্যা**: নতুন কোনো অ্যাডভাইজর `Dr. Selim` (Room 405) যোগ দিলে, আমরা তাকে এই টেবিলে ইনসার্ট করতে পারব না যতক্ষণ না কোনো স্টুডেন্ট তার আন্ডারে কোনো কোর্স নিচ্ছে। কারণ `student_id` বা `course_code` খালি (NULL) রাখা সম্ভব নয়।
+
+#### ২. Update Anomaly (আপডেট অ্যানোমালি):
+* **সমস্যা**: যদি `Dr. Kamal` তার রুম পরিবর্তন করে `Room 501`-এ যান, তবে Rahim এবং Shafi-এর মোট ৩টি রো-তে গিয়ে আলাদাভাবে রুম নম্বর আপডেট করতে হবে। কোনো একটি রো মিস হয়ে গেলে ডাটাবেসে অসঙ্গতি (Inconsistency) তৈরি হবে।
+
+#### ৩. Deletion Anomaly (ডিলিট অ্যানোমালি):
+* **সমস্যা**: যদি স্টুডেন্ট `Eve` (S106) তার কোর্স ড্রপ করে দেয় এবং আমরা তার রো-টি টেবিল থেকে ডিলিট করে দিই, তবে স্টুডেন্টের তথ্যের সাথে সাথে `Dr. Noman` এবং তার রুম নম্বর (Room 403) এর মতো অত্যন্ত প্রয়োজনীয় তথ্যটিও ডাটাবেস থেকে চিরতরে মুছে যাবে।
+
+---
+
+### ১ম নরমাল ফর্ম - 1NF (First Normal Form)
+* **মূল শর্ত**: প্রতিটি কলামের মান অবশ্যই **পরমাণু বা অবিভাজ্য (Atomic)** হতে হবে। কোনো কলামে কমা-আলাদা করা মান (comma-separated list), গ্রুপ বা অ্যারে (Array) স্টোর করা যাবে না।
+
+নিচে ৩টি বাস্তব উদাহরণ দেওয়া হলো (প্রতিটি টেবিলে কমপক্ষে ৭টি করে ডাটা রয়েছে):
+
+#### উদাহরণ ১: একাধিক কোর্স কমা দিয়ে এক কলামে রাখা
+* **Invalid Table (1NF অমান্যকারী)**:
+  | student_id | name | courses |
+  | :--- | :--- | :--- |
+  | S101 | Rahim | CSE101, CSE102 |
+  | S102 | Karim | CSE101 |
+  | S103 | Shafi | CSE101, CSE103, CSE104 |
+  | S104 | David | CSE104 |
+  | S105 | Eve | CSE105, CSE101 |
+  | S106 | Frank | CSE102 |
+  | S107 | Grace | CSE101, CSE105 |
+
+* **Valid Table (1NF মান্যকারী)**:
+  | student_id | name | course |
+  | :--- | :--- | :--- |
+  | S101 | Rahim | CSE101 |
+  | S101 | Rahim | CSE102 |
+  | S102 | Karim | CSE101 |
+  | S103 | Shafi | CSE101 |
+  | S103 | Shafi | CSE103 |
+  | S103 | Shafi | CSE104 |
+  | S104 | David | CSE104 |
+  | S105 | Eve | CSE105 |
+  | S105 | Eve | CSE101 |
+  | S106 | Frank | CSE102 |
+  | S107 | Grace | CSE101 |
+  | S107 | Grace | CSE105 |
+
+#### উদাহরণ ২: একাধিক ফোন নম্বর এক কলামে রাখা
+* **Invalid Table (1NF অমান্যকারী)**:
+  | emp_id | name | phone_numbers |
+  | :--- | :--- | :--- |
+  | E01 | Rahim | 01711, 01811 |
+  | E02 | Karim | 01911 |
+  | E03 | Shafi | 01511, 01611, 01722 |
+  | E04 | David | 01733 |
+  | E05 | Eve | 01822, 01922 |
+  | E06 | Frank | 01522 |
+  | E07 | Grace | 01744, 01622 |
+
+* **Valid Table (1NF মান্যকারী)**:
+  | emp_id | name | phone_number |
+  | :--- | :--- | :--- |
+  | E01 | Rahim | 01711 |
+  | E01 | Rahim | 01811 |
+  | E02 | Karim | 01911 |
+  | E03 | Shafi | 01511 |
+  | E03 | Shafi | 01611 |
+  | E03 | Shafi | 01722 |
+  | E04 | David | 01733 |
+  | E05 | Eve | 01822 |
+  | E05 | Eve | 01922 |
+  | E06 | Frank | 01522 |
+  | E07 | Grace | 01744 |
+  | E07 | Grace | 01622 |
+
+#### উদাহরণ ৩: ক্লায়েন্টের একাধিক শাখা অফিস এক কলামে রাখা
+* **Invalid Table (1NF অমান্যকারী)**:
+  | client_id | name | branch_cities |
+  | :--- | :--- | :--- |
+  | C01 | Acme | Dhaka, Sylhet |
+  | C02 | Beta | Chittagong |
+  | C03 | Gamma | Khulna, Barisal, Rajshahi |
+  | C04 | Delta | Rangpur |
+  | C05 | Sigma | Mymensingh, Comilla |
+  | C06 | Omega | Jessore |
+  | C07 | Zeta | Bogra, Kushtia |
+
+* **Valid Table (1NF মান্যকারী)**:
+  | client_id | name | branch_city |
+  | :--- | :--- | :--- |
+  | C01 | Acme | Dhaka |
+  | C01 | Acme | Sylhet |
+  | C02 | Beta | Chittagong |
+  | C03 | Gamma | Khulna |
+  | C03 | Gamma | Barisal |
+  | C03 | Gamma | Rajshahi |
+  | C04 | Delta | Rangpur |
+  | C05 | Sigma | Mymensingh |
+  | C05 | Sigma | Comilla |
+  | C06 | Omega | Jessore |
+  | C07 | Zeta | Bogra |
+  | C07 | Zeta | Kushtia |
+
+---
+
+### ২য় নরমাল ফর্ম - 2NF (Second Normal Form)
+* **মূল শর্ত**: টেবিলটিকে অবশ্যই **1NF** হতে হবে এবং কোনো **আংশিক নির্ভরতা (Partial Dependency)** থাকা যাবে না। অর্থাৎ, নন-প্রাইম কলামগুলো যদি কোনো কম্পোজিট প্রাইমারি কী-এর আংশিক অংশের ওপর নির্ভর করে, তবে তাকে আলাদা করতে হবে।
+
+#### এটি কখন প্রয়োজন হয় এবং কী সমাধান করে?
+* যখন টেবিলে কোনো **কম্পোজিট প্রাইমারি কী** (যেমন: `student_id` এবং `course_code` যৌথভাবে) ব্যবহার করা হয় এবং কোনো কলাম পুরো কম্পোজিট কী-এর ওপর নির্ভর না করে কেবল তার যেকোনো একটি কলামের ওপর নির্ভর করে, তখন ২NF-এর প্রয়োজন হয়।
+* এটি আংশিক নির্ভরতা দূর করে এবং এর ফলে একই ডাটা বারবার সেভ করার ঝামেলা (Redundancy) দূর হয়। এটি ইনসার্ট, আপডেট এবং ডিলিট অ্যানোমালি দূর করে।
+
+#### ২NF অমান্যকারী টেবিল উদাহরণ (আংশিক নির্ভরতা সহ ৭টি রো):
+ধরি আমাদের একটি টেবিল `course_enrollments` রয়েছে, যার প্রাইমারি কী হলো কম্পোজিট কী: **`(student_id, course_code)`**।
+
+| student_id (PK) | course_code (PK) | student_name | course_fee |
+| :--- | :--- | :--- | :--- |
+| S101 | CSE101 | Rahim | 5000 |
+| S101 | CSE102 | Rahim | 6000 |
+| S102 | CSE101 | Karim | 5000 |
+| S103 | CSE101 | Shafi | 5000 |
+| S103 | CSE103 | Shafi | 7000 |
+| S104 | CSE104 | David | 4500 |
+| S105 | CSE101 | Eve | 5000 |
+
+* **এখানে সমস্যা (Partial Dependency)**:
+  - `student_name` কলামটি শুধুমাত্র `student_id` এর ওপর নির্ভর করে, পুরো কী `(student_id, course_code)` এর ওপর নয়। 
+  - `course_fee` কলামটি শুধুমাত্র `course_code` এর ওপর নির্ভর করে।
+
+* **২NF অ্যানোমালি উদাহরণ**:
+  - **ইনসার্ট অ্যানোমালি**: আমরা একটি নতুন কোর্স (যেমন: CSE105, ফি: ৮০০০) এড করতে পারব না যতক্ষণ না কোনো স্টুডেন্ট ওতে ভর্তি হচ্ছে।
+  - **আপডেট অ্যানোমালি**: যদি CSE101 কোর্সের ফি পরিবর্তন করে ৫০০০ থেকে ৫৫০০ করতে হয়, তবে ৪টি রো-তে গিয়ে আলাদাভাবে পরিবর্তন করতে হবে।
+  - **ডিলিট অ্যানোমালি**: যদি S104 স্টুডেন্টটি ডিলিট করে দেওয়া হয়, তবে CSE104 কোর্সের ফি যে ৪৫০০ টাকা, সেই তথ্যটিও ডাটাবেস থেকে মুছে যাবে।
+
+#### ২NF অনুযায়ী টেবিল বিভক্তিকরণ (Solution):
+আমরা টেবিলটিকে ৩টি আলাদা টেবিলে বিভক্ত করব:
+
+১. `students` টেবিল:
+| student_id (PK) | student_name |
+| :--- | :--- |
+| S101 | Rahim |
+| S102 | Karim |
+| S103 | Shafi |
+| S104 | David |
+| S105 | Eve |
+
+২. `courses` টেবিল:
+| course_code (PK) | course_fee |
+| :--- | :--- |
+| CSE101 | 5000 |
+| CSE102 | 6000 |
+| CSE103 | 7000 |
+| CSE104 | 4500 |
+
+৩. `enrollments` টেবিল (সম্পর্ক স্থাপনকারী জাংশন টেবিল):
+| student_id (FK) | course_code (FK) |
+| :--- | :--- |
+| S101 | CSE101 |
+| S101 | CSE102 |
+| S102 | CSE101 |
+| S103 | CSE101 |
+| S103 | CSE103 |
+| S104 | CSE104 |
+| S105 | CSE101 |
+
+---
+
+### ৩য় নরমাল ফর্ম - 3NF (Third Normal Form)
+* **মূল শর্ত**: টেবিলটিকে অবশ্যই **2NF** হতে হবে এবং কোনো **স্থানান্তরকামী নির্ভরতা (Transitive Dependency)** থাকতে পারবে না। অর্থাৎ, কোনো নন-প্রাইম কলাম অন্য কোনো নন-প্রাইম কলামের ওপর নির্ভর করতে পারবে না ($A \rightarrow B$ এবং $B \rightarrow C$ হলে $A \rightarrow C$)।
+
+#### ৩NF অমান্যকারী টেবিল উদাহরণ:
+| emp_id (PK) | emp_name | dept_id | dept_name |
+| :--- | :--- | :--- | :--- |
+| E01 | Rahim | D01 | HR |
+| E02 | Karim | D02 | IT |
+| E03 | Shafi | D02 | IT |
+
+* **এখানে সমস্যা (Transitive Dependency)**:
+  - `emp_id` $\rightarrow$ `dept_id` (কর্মচারী আইডি দিয়ে ডিপার্টমেন্ট আইডি জানা যায়)
+  - `dept_id` $\rightarrow$ `dept_name` (ডিপার্টমেন্ট আইডি দিয়ে ডিপার্টমেন্টের নাম জানা যায়)
+  - সুতরাং, `emp_id` $\rightarrow$ `dept_name` (যা একটি ট্রানজিটিভ ডিপেনডেন্সি)।
+
+#### ৩NF অনুযায়ী টেবিল বিভক্তিকরণ (Solution):
+১. `employees` টেবিল:
+| emp_id (PK) | emp_name | dept_id (FK) |
+| :--- | :--- | :--- |
+| E01 | Rahim | D01 |
+| E02 | Karim | D02 |
+| E03 | Shafi | D02 |
+
+২. `departments` টেবিল:
+| dept_id (PK) | dept_name |
+| :--- | :--- |
+| D01 | HR |
+| D02 | IT |
+
+---
+
+### বয়েস-কড নরমাল ফর্ম - BCNF (Boyce-Codd Normal Form)
+* **মূল শর্ত**: এটি ৩NF-এর আরও শক্তিশালী রূপ (কখনও একে 3.5NF বলা হয়)। প্রতি কার্যকরী নির্ভরতা (Functional Dependency) $X \rightarrow Y$ এর ক্ষেত্রে, বাম পাশের কলাম $X$ অবশ্যই একটি **সুপার কী (Super Key)** হতে হবে।
+
+#### BCNF অমান্যকারী টেবিল উদাহরণ:
+ধরি আমাদের একটি `lessons` টেবিল রয়েছে, যেখানে শিক্ষকরা শিক্ষার্থীদের বিভিন্ন বিষয় পড়ান। ক্যান্ডিডেট কী হলো যৌথভাবে **`(student_id, subject)`**।
+
+| student_id | subject | teacher |
+| :--- | :--- | :--- |
+| S101 | Math | Mr. Kamal |
+| S101 | Physics | Mr. Zaman |
+| S102 | Math | Mr. Kamal |
+| S103 | Physics | Mr. Noman |
+
+* **এখানে নিয়ম বা সমস্যা**:
+  - প্রতিটি শিক্ষকের কেবল একটি নির্দিষ্ট সাবজেক্ট পড়ানোর অনুমতি আছে (যেমন: `Mr. Kamal` শুধু `Math` পড়ান)। অর্থাৎ, `teacher` $\rightarrow$ `subject`।
+  - কিন্তু বাম পাশের কলাম `teacher` টেবিলটির কোনো সুপার কী বা ক্যান্ডিডেট কী নয়! তাই এটি ৩NF হলেও **BCNF ভঙ্গ করে**।
+
+#### BCNF অনুযায়ী টেবিল বিভক্তিকরণ (Solution):
+১. `teacher_subjects` টেবিল:
+| teacher (PK) | subject |
+| :--- | :--- |
+| Mr. Kamal | Math |
+| Mr. Zaman | Physics |
+| Mr. Noman | Physics |
+
+২. `student_teachers` টেবিল:
+| student_id (FK) | teacher (FK) |
+| :--- | :--- |
+| S101 | Mr. Kamal |
+| S101 | Mr. Zaman |
+| S102 | Mr. Kamal |
+| S103 | Mr. Noman |
 
 ### Denormalization
 * **Definition:** Intentionally introducing redundancy into a database by combining tables to reduce costly `JOIN` operations.
