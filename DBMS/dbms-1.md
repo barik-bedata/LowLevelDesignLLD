@@ -123,18 +123,16 @@ COMMIT;
 
 ## 2. DROP vs TRUNCATE vs DELETE
 
-This is one of the most frequently asked interview questions in technical screening tests.
+এটি ইন্টারভিউতে সবচেয়ে বেশি জিজ্ঞাসিত প্রশ্নগুলোর একটি। নিচে এদের মূল পার্থক্যসমূহ তুলে ধরা হলো:
 
-| Feature | `DELETE` | `TRUNCATE` | `DROP` |
+| বৈশিষ্ট্য (Feature) | `DELETE` | `TRUNCATE` | `DROP` |
 | :--- | :--- | :--- | :--- |
-| **Command Type** | DML (Data Manipulation) | DDL (Data Definition) | DDL (Data Definition) |
-| **Scope** | Deletes specific rows or all rows | Deletes **all rows** | Deletes **entire table schema + data** |
-| **`WHERE` Clause** | **Supported** (Can delete specific rows) | **Not Supported** | **Not Supported** |
-| **Speed / Performance** | Slow (Deletes row-by-row, logs each deletion) | Fast (Deallocates data pages directly) | Extremely Fast (Removes table metadata & data) |
-| **Rollback Support** | **Yes** (Inside a transaction block) | **Yes in Postgres/SQL Server**, No in MySQL | **Yes in Postgres/Oracle**, No in MySQL |
-| **Identity/Auto-Increment** | Does **NOT** reset identity counter | **Resets** identity counter to initial seed | Completely removes identity counter |
-| **Triggers Fired** | Fires `ON DELETE` triggers for each row | Does **NOT** fire `DELETE` triggers | Does **NOT** fire `DELETE` triggers |
-| **Space Recovery** | Does not immediately free disk space | Releases deallocated data pages back to OS/DB | Frees all allocated memory and storage |
+| **কমান্ডের ধরণ (Type)** | DML (Data Manipulation Language) | DDL (Data Definition Language) | DDL (Data Definition Language) |
+| **কাজ (Action)** | টেবিল ঠিক রেখে ভেতরের নির্দিষ্ট বা সব রো (rows) ডিলেট করে। | টেবিল ঠিক রেখে ভেতরের সব রো (rows) একবারে ডিলেট করে। | সম্পূর্ণ টেবিলের স্ট্রাকচার (schema), ইনডেক্স এবং ডেটা চিরতরে মুছে ফেলে। |
+| **`WHERE` ক্লজ** | **সাপোর্ট করে** (নির্দিষ্ট রো ডিলেট করা সম্ভব)। | **সাপোর্ট করে না** (সব ডেটা একসাথে ডিলেট হয়)। | **সাপোর্ট করে না** (সম্পূর্ণ টেবিলই ডিলেট হয়ে যায়)। |
+| **গতি (Performance)** | **ধীরগতির** (প্রতিটি রো আলাদাভাবে মুছে দেয় এবং ট্রানজেকশন লগ রাখে)। | **অত্যন্ত দ্রুতগতির** (সরাসরি টেবিলের ডেটা পেজগুলো খালি করে দেয়)। | **তাত্ক্ষণিক** (সরাসরি ডেটাবেস মেটাডেটা থেকে টেবিলটি মুছে ফেলে)। |
+| **ট্রিগার (Triggers)** | **ট্রিগার ফায়ার হয়** (প্রতিটি রো ডিলেটের সময় `DELETE` ট্রিগার রান করে)। | **ট্রিগার ফায়ার হয় না** (কোনো ট্রিগার রান করে না)। | **ট্রিগার ফায়ার হয় না** (কোনো ট্রিগার রান করে না)। |
+| **রোলব্যাক (Rollback)** | **সবসময় সম্ভব** (রোলব্যাক করে ডেটা ফিরিয়ে আনা যায়)। | **সাধারণত সম্ভব নয়** (MySQL/Oracle-এ অটো-কমিট হওয়ায় সম্ভব নয়। তবে Postgres/SQL Server-এ সম্ভব)। | **সাধারণত সম্ভব নয়** (টেবিলটিই মুছে যায়। তবে Postgres-এ ট্রানজেকশনের ভেতর সম্ভব)। |
 
 ---
 
