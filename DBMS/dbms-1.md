@@ -1005,6 +1005,22 @@ The process of structuring a relational database to minimize data redundancy and
 ---
 
 ### ২য় নরমাল ফর্ম - 2NF (Second Normal Form)
+
+#### 📝 English Definitions (অফিসিয়াল ইংরেজি সংজ্ঞা):
+
+* **Definition 1 (Elmasri & Navathe)**:
+  > **"A relation schema R is in second normal form (2NF) if it is in 1NF and every non-prime attribute A in R is fully functionally dependent on the primary key (or any candidate key) of R."**
+
+* **Definition 2 (Alternative Standard)**:
+  > **"A relation is in the second normal form (2NF) if it is in the first normal form (1NF) and no non-prime attribute is partially dependent on any candidate key of the relation."**
+
+* **Detailed English Explanation (সংজ্ঞার ইংরেজি ব্যাখ্যা)**:
+  1. **Must be in 1NF**: Every cell in the table must contain atomic (indivisible) values.
+  2. **Every non-prime attribute must be "Fully Functionally Dependent" on the key**: This means that to identify the value of any non-prime attribute (ordinary column), you must need the **entire** candidate key.
+  3. **No Partial Dependency**: If the candidate key is composite (consisting of two or more columns, e.g., `{student_id, course_code}`), a non-prime attribute (e.g., `student_name`) is **not allowed** to depend on only a subset of the key (e.g., just `student_id`). If it does, the attribute is partially dependent, violating 2NF.
+
+---
+
 * **মূল শর্ত**: টেবিলটিকে অবশ্যই **1NF** হতে হবে এবং কোনো **আংশিক নির্ভরতা (Partial Dependency)** থাকা যাবে না। অর্থাৎ, নন-প্রাইম কলামগুলো যদি কোনো কম্পোজিট প্রাইমারি কী-এর আংশিক অংশের ওপর নির্ভর করে, তবে তাকে আলাদা করতে হবে।
 
 #### এটি কখন প্রয়োজন হয় এবং কী সমাধান করে?
