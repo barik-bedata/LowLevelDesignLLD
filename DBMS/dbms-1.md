@@ -1280,6 +1280,13 @@ The process of structuring a relational database to minimize data redundancy and
 | D01 | HR |
 | D02 | IT |
 
+* 💡 **ইন্টারভিউ সতর্কতা (Interview Alert: Why Direction Matters in 3NF)**:
+  - **প্রশ্ন**: যদি আমাদের কোনো কার্যকরী নির্ভরতা $X \rightarrow Y$ থাকে, তবে কি "বাম পাশের $X$ একটি Prime Attribute" অথবা "ডান পাশের $Y$ একটি Super Key" হলে ৩NF পাস হবে?
+  - **উত্তর**: **না, মোটেও না।** ৩NF-এর ক্ষেত্রে নির্ভরতার দিক (Direction) অত্যন্ত সুনির্দিষ্ট। 
+    - **হতে হবে**: $X$ (বাম পাশ) = Super Key **অথবা** $Y$ (ডান পাশ) = Prime Attribute।
+    - **উল্টোটা অবৈধ কেন?**: যদি $X$ (বাম পাশ) কেবল একটি Prime Attribute হয় (যেমন: কম্পোজিট চাবির একটি আংশিক কলাম), তবে সে অন্য কোনো কলাম $Y$-কে নির্ধারণ করলে সেটি একটি **আংশিক নির্ভরতা (Partial Dependency)** তৈরি করবে, যা ২NF এবং ৩NF উভয়কেই সরাসরি লঙ্ঘন করে।
+    - **মনে রাখার নিয়ম**: সবসময় **বাম পাশকে হতে হবে শক্তিশালী (Super Key)** অথবা **ডান পাশকে হতে হবে চাবির অংশ (Prime Attribute)**।
+
 ---
 
 ### বয়েস-কড নরমাল ফর্ম - BCNF (Boyce-Codd Normal Form)
