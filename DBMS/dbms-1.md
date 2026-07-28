@@ -369,7 +369,7 @@ DELETE FROM departments WHERE dept_id = 2;
   - নিয়ম অনুযায়ী, যে সেটে `{product_id}` অথবা `{barcode}` যেকোনো একটি (বা উভয়টি) থাকবে, সেটিই সুপার কী।
   - মোট কলাম $n = 3$।
   - Inclusion-Exclusion সূত্র অনুযায়ী:
-    $$\text{Total} = (\text{Keys containing product\_id}) + (\text{Keys containing barcode}) - (\text{Keys containing both})$$
+    $$\text{Total} = (\text{Keys containing product id}) + (\text{Keys containing barcode}) - (\text{Keys containing both})$$
     $$\text{Total} = 2^{(3-1)} + 2^{(3-1)} - 2^{(3-2)} = 2^2 + 2^2 - 2^1 = 4 + 4 - 2 = 6 \text{ টি।}$$
   - **এই ৬টি সুপার কী হলো**:
     1. `{product_id}`
