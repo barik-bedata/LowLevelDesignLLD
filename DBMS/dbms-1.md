@@ -1801,6 +1801,8 @@ An extension of CAP that accounts for normal operation state (when no network pa
 
 ### 🏢 Use Cases: কোথায় কোনটি ব্যবহার করবেন?
 
+![SQL vs NoSQL](resources/sql_vs_nosql.jpg)
+
 | SQL উপযুক্ত (Best for SQL) | NoSQL উপযুক্ত (Best for NoSQL) |
 | :--- | :--- |
 | • E-commerce order/payment | • Social media feed |
