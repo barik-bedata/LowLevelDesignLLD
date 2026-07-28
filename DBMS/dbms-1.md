@@ -1365,6 +1365,8 @@ The process of structuring a relational database to minimize data redundancy and
 
 ### বয়েস-কড নরমাল ফর্ম - BCNF (Boyce-Codd Normal Form)
 * **মূল শর্ত**: এটি ৩NF-এর আরও শক্তিশালী রূপ (কখনও একে 3.5NF বলা হয়)। প্রতি কার্যকরী নির্ভরতা (Functional Dependency) $X \rightarrow Y$ এর ক্ষেত্রে, বাম পাশের কলাম $X$ অবশ্যই একটি **সুপার কী (Super Key)** হতে হবে।
+  * **ইংরেজি স্ট্যান্ডার্ড সংজ্ঞা (Official English Definition)**: 
+    > **"A relation schema R is in BCNF if, for EVERY non-trivial functional dependency $X \rightarrow Y$ that holds in R, $X$ is a superkey of R."**
 
 * 💡 **সহজ ভাষায় BCNF বোঝার গাইড (Why BCNF exists & How it differs from 3NF)**:
   
