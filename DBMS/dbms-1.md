@@ -775,7 +775,9 @@ The process of structuring a relational database to minimize data redundancy and
       - অর্থাৎ, `submission_date` এবং `score` জানতে হলে **স্টুডেন্ট আইডি ও প্রজেক্ট আইডি দুটো তথ্যই একসাথে লাগবে**।
       - যেহেতু নন-কী কলামগুলো সম্পূর্ণ কম্পোজিট কী-এর ওপর নির্ভরশীল (কোনো আংশিক নির্ভরতা নেই), তাই এই টেবিলটি **সম্পূর্ণ ২NF-এ আছে এবং ২NF ভায়োলেট করে না**।
   - **প্রশ্ন: Prime Attribute এবং Non-prime Attribute বলতে আসলে কী বোঝায়? টেবিলে একাধিক কম্পোজিট ক্যান্ডিডেট কী থাকলে কি অল্টারনেট কী-এর কলামগুলোকে Non-prime ধরা হবে? এগুলো কীভাবে সনাক্ত করব?**
-    - **উত্তর**: ডাটাবেস নরমালইজেশনের ক্ষেত্রে কলামগুলোকে মূলত দুই ভাগে ভাগ করা হয়:
+    - **উত্তর**: ডাটাবেস নরমালইজেশনের ক্ষেত্রে কলামগুলোকে মূলত দুই ভাগে ভাগ করা হয়। স্ট্যান্ডার্ড ডাটাবেস টেক্সটবুক (*Fundamentals of Database Systems by Elmasri & Navathe*) অনুযায়ী এর সংজ্ঞা হলো:
+      > **"An attribute of a relation schema R is called a prime attribute if it is a member of some candidate key of R. If it is not a member of any candidate key, it is called a non-prime attribute."**
+
       ১. **Prime Attribute (প্রাইম অ্যাট্রিবিউট)**: একটি কলাম যদি টেবিলের **যেকোনো একটি ক্যান্ডিডেট কী (Candidate Key)**-এর অংশ বা সদস্য হয়, তবে তাকে Prime Attribute বলে।
       ২. **Non-prime Attribute (নন-প্রাইম অ্যাট্রিবিউট)**: একটি কলাম যদি টেবিলের **কোনো ক্যান্ডিডেট কী**-এরই অংশ না হয়, তবে তাকে Non-prime Attribute বলে।
     
