@@ -510,6 +510,39 @@ DELETE FROM departments WHERE dept_id = 2;
     - **কারণ**: ক্লাস্টার্ড ইনডেক্স ডিস্কের উপর ডেটার **ভৌত সাজসজ্জা বা সর্টিং অর্ডার (Physical Sorting/Order)** নির্ধারণ করে। কিন্তু হ্যাশ ইনডেক্স হ্যাশ ফাংশনের মাধ্যমে মেমরি অ্যাড্রেস বরাদ্দ করে যা সম্পূর্ণ র‍্যান্ডম এবং এলোমেলো (যেমন: ১ এর হ্যাশ হতে পারে ৯৮, ২ এর হ্যাশ হতে পারে ১৪)। যেহেতু এখানে কোনো সর্টিং বা ক্রম নির্ধারণের সুযোগ থাকে না, তাই একে ক্লাস্টার্ড ইনডেক্স বানানো অসম্ভব।
     - এটি সবসময় **Non-Clustered (Secondary) Index** হিসেবে কাজ করে।
 
+### 💡 Interview Cheat-Sheet: Indexing Complexity (ইনডেক্সিং কমপ্লেক্সিটি ইন্টারভিউ গাইড)
+
+ইন্টারভিউতে যখন আপনাকে প্রশ্ন করা হবে: **"What is the time complexity of searching data using indexes?"** তখন আপনি যেভাবে ধাপে ধাপে উত্তরটি দেবেন তা নিচে প্রফেশনাল স্ক্রিপ্ট আকারে দেওয়া হলো:
+
+#### ১. মূল উত্তর (The Core Answer):
+> *"The search complexity using indexes depends on the type of index being used:*
+> * *If it is a **B+ Tree Index** (which is the default for Primary Keys in databases like MySQL and PostgreSQL), the complexity is **$O(\log N)$** for both point and range queries.*
+> * *If it is a **Hash Index**, the complexity is **$O(1)$** for point lookups, but it does not support range queries."*
+
+---
+
+#### ২. ক্লিয়ারিং কনসেপ্ট ও ডিটেইলস (Detailed Explanation of index types):
+
+##### ক. B+ Tree Index (Default Primary Key Index):
+* **Point Query (`WHERE id = 5`) Complexity: $O(\log N)$**
+  - **কেন?**: B+ Tree একটি সুষম সার্চ ট্রি (balanced search tree)। রুট নোড থেকে শুরু করে লিফ নোড পর্যন্ত ট্রাভার্স করতে গাছের উচ্চতা বা হাইটের সমপরিমাণ ধাপ অতিক্রম করতে হয়, যা গাণিতিকভাবে $\log N$।
+* **Range Query (`WHERE id > 5`) Complexity: $O(\log N + k)$**
+  - **কেন?**: ডাটাবেস প্রথমে B+ Tree সার্চ করে প্রথম রো-টি খুঁজে বের করে ($O(\log N)$)। এরপর লিফ নোডগুলোর ডাবলি লিংকড লিস্ট (doubly linked list) ধরে পাশাপাশি পরবর্তী $k$ টি ম্যাচিং ডাটা সিকুয়েন্সিয়ালি স্ক্যান করে ফেলে ($O(k)$)।
+
+##### খ. Hash Index (হ্যাশ ইনডেক্স):
+* **Point Query (`WHERE id = 5`) Complexity: $O(1)$**
+  - **কেন?**: হ্যাশ ফাংশন সরাসরি একটি কি (Key) ইনপুট নিয়ে মেমরি অ্যাড্রেস জেনারেট করে। এখানে কোনো ট্রি ট্রাভার্সাল নেই, তাই সরাসরি ধ্রুবক সময়ে ($O(1)$) ডাটা পাওয়া যায়।
+* **Range Query (`WHERE id > 5`) Complexity: Not Supported**
+  - **কেন?**: হ্যাশিংয়ে কোনো সর্টিং বা সিকুয়েন্সিং অর্ডার থাকে না। তাই কোনো হ্যাশ ইনডেক্স ব্যবহার করে রেঞ্জ সার্চ বা সর্টিং করা সম্ভব নয়।
+
+---
+
+#### ৩. রিয়েল ডাটাবেস প্রফেশনাল নোট (Real DB Engine Examples for Pro Impression):
+ইন্টারভিউয়ারকে ইমপ্রেস করার জন্য ডাটাবেস ইঞ্জিনের বাস্তব উদাহরণ জুড়ে দিন:
+
+* **MySQL InnoDB**: ডিফল্ট ক্লাস্টার্ড ইনডেক্স হিসেবে **B+ Tree** ব্যবহার করে (কমপ্লেক্সিটি $O(\log N)$)। তবে মেমরিতে অতিব্যবহৃত পেজগুলোর জন্য এটি অটোমেটিক **Adaptive Hash Index (AHI)** তৈরি করে নেয়, যা পয়েন্ট কুয়েরিকে $O(1)$ স্পিড দেয়।
+* **PostgreSQL**: ডিফল্ট ইনডেক্স হিসেবে **B-tree** ব্যবহার করে ($O(\log N)$)। তবে চাইলে কলামে এক্সপ্লিসিটলি **Hash Index** (`USING hash`) তৈরি করা যায় যা $O(1)$ এ কাজ করে।
+
 ---
 
 ## 5. Normalization & Denormalization
