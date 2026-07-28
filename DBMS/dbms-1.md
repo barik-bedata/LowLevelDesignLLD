@@ -1374,10 +1374,10 @@ The process of structuring a relational database to minimize data redundancy and
       | E01 | Rahim | HR |
       | E02 | Karim | IT |
     - **Trivial Dependency (তুচ্ছ নির্ভরতা)**: যখন ডান দিকের অংশটি আগে থেকেই বাম দিকের অংশের ভেতর উপস্থিত থাকে (অর্থাৎ $Y \subseteq X$)।
-      * যেমন: `{emp_id, emp_name} \rightarrow emp_name`। 
+      * যেমন: **`{emp_id, emp_name} -> emp_name`**। 
       * **লজিক**: আমি যদি আপনাকে ওপরের টেবিল থেকে `{E01, Rahim}` দিয়ে বলি "বলেন তো এর `emp_name` কী?" আপনি বলবেন "Rahim"! কারণ উত্তরটা প্রশ্নের ভেতরেই দেওয়া আছে। এখানে নতুন করে কিছু বের করার নেই। এটিই হলো Trivial। এগুলো ডাটাবেসের কোনো আসল রুল নয়, তাই এগুলো নিয়ে আমরা মাথা ঘামাই না।
     - **Non-Trivial Dependency (প্রকৃত নির্ভরতা)**: যখন ডান দিকের কলামটি সম্পূর্ণ নতুন কোনো তথ্য দেয় (অর্থাৎ $Y \not\subseteq X$)।
-      * যেমন: `emp_id \rightarrow emp_name`। 
+      * যেমন: **`emp_id -> emp_name`**। 
       * **লজিক**: এবার আমি আপনাকে শুধু `E01` দিয়ে বললাম "বলেন তো এর `emp_name` কী?" এবার আপনাকে টেবিলের দিকে তাকাতে হবে এবং আপনি বলবেন "Rahim"। এখানে বাম পাশ (`emp_id`) আপনাকে সম্পূর্ণ নতুন একটি তথ্য (`emp_name`) এনে দিল। এটিই হলো ডাটাবেসের আসল বিজনেস রুল বা **Non-Trivial Dependency**। সংজ্ঞায় বলা হয়েছে, কেবল এই আসল সম্পর্কগুলোকেই সুপার কী হতে হবে।
 
 * 💡 **সহজ ভাষায় BCNF বোঝার গাইড (Why BCNF exists & How it differs from 3NF)**:
