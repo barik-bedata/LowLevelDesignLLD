@@ -1144,20 +1144,27 @@ The process of structuring a relational database to minimize data redundancy and
 * **মূল শর্ত**: টেবিলটিকে অবশ্যই **2NF** হতে হবে এবং কোনো **স্থানান্তরকামী নির্ভরতা (Transitive Dependency)** থাকতে পারবে না। অর্থাৎ, কোনো নন-প্রাইম কলাম অন্য কোনো নন-প্রাইম কলামের ওপর নির্ভর করতে পারবে না ($A \rightarrow B$ এবং $B \rightarrow C$ হলে $A \rightarrow C$)।
 
 #### ৩NF অমান্যকারী টেবিল উদাহরণ:
+ধরি, আমাদের একটি টেবিল `employee_departments` রয়েছে:
+
 | emp_id (PK) | emp_name | dept_id | dept_name |
 | :--- | :--- | :--- | :--- |
 | E01 | Rahim | D01 | HR |
 | E02 | Karim | D02 | IT |
 | E03 | Shafi | D02 | IT |
 
-* **এখানে সমস্যা (Transitive Dependency)**:
-  - এখানে একমাত্র ক্যান্ডিডেট কী হলো **`{emp_id}`** (যা Prime Attribute)।
-  - বাকি কলামগুলো যেমন: `dept_id` এবং `dept_name` হলো **Non-prime Attributes** (ক্যান্ডিডেট কী-এর অংশ নয়)।
-  - আমাদের এফডি (Functional Dependencies) খেয়াল করুন:
-    1. `emp_id` $\rightarrow$ `dept_id` (Prime $\rightarrow$ Non-prime)
-    2. `dept_id` $\rightarrow$ `dept_name` (Non-prime $\rightarrow$ Non-prime)
-  - এখানে `dept_name` সরাসরি প্রাইমারি কী `emp_id`-এর ওপর নির্ভর না করে, অন্য একটি নন-প্রাইম কলাম `dept_id`-এর ওপর নির্ভর করছে।
-  - যার ফলে ট্রানজিটিভলি (পরোক্ষভাবে): `emp_id` $\rightarrow$ `dept_id` $\rightarrow$ `dept_name` সম্পর্ক তৈরি হচ্ছে। এটিই হলো **Transitive Dependency** (যা ৩NF-এ সম্পূর্ণ নিষিদ্ধ)।
+##### কলামগুলোর ক্লাসিফিকেশন (Prime vs Non-prime Classification):
+* **ক্যান্ডিডেট কী (Candidate Key)**: এই টেবিলের একমাত্র ক্যান্ডিডেট কী হলো **`{emp_id}`**।
+* **Prime Attribute (প্রাইম কলাম)**: 
+  - **`emp_id`** (কারণ এটি ক্যান্ডিডেট কী-এর সদস্য)।
+* **Non-prime Attributes (নন-প্রাইম কলাম)**: 
+  - **`emp_name`**, **`dept_id`**, **`dept_name`** (কারণ এরা কেউই ক্যান্ডিডেট কী-এর অংশ বা সদস্য নয়)।
+
+##### 🚫 এখানে সমস্যা (Transitive Dependency):
+* আমাদের কার্যকরী নির্ভরতা বা Functional Dependencies (FDs) গুলো লক্ষ্য করুন:
+  1. `emp_id` $\rightarrow$ `dept_id` (কর্মচারী আইডি দিয়ে তার ডিপার্টমেন্ট আইডি জানা যায়)
+  2. `dept_id` $\rightarrow$ `dept_name` (ডিপার্টমেন্ট আইডি দিয়ে ডিপার্টমেন্টের নাম জানা যায়)
+* এখানে, `dept_name` (নন-প্রাইম কলাম) সরাসরি ক্যান্ডিডেট কী `emp_id`-এর ওপর নির্ভর না করে, অন্য একটি নন-প্রাইম কলাম `dept_id`-এর ওপর নির্ভর করছে।
+* এর ফলে একটি পরোক্ষ বা স্থানান্তরিত সম্পর্ক তৈরি হচ্ছে: `emp_id` $\rightarrow$ `dept_id` $\rightarrow$ `dept_name`। এটিই হলো **Transitive Dependency** (যা ৩NF-এ সম্পূর্ণ নিষিদ্ধ)।
 
 #### ৩NF অনুযায়ী টেবিল বিভক্তিকরণ (Solution):
 ১. `employees` টেবিল:
