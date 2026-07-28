@@ -179,16 +179,16 @@ DROP TABLE employees;
 
 ## 3. Cascading Operations in SQL
 
-Cascading constraints define what happens to child table records when a referenced parent key is updated or deleted.
+প্যারেন্ট টেবিলের (parent table) কোনো প্রাইমারি কী আপডেট বা ডিলেট করা হলে চাইল্ড টেবিলের (child table) সংশ্লিষ্ট রো-গুলোর ওপর কী প্রভাব পড়বে, তা নির্ধারণ করে ক্যাসকেডিং কনস্ট্রেইন্ট (Cascading constraints)।
 
 ### Foreign Key Actions (`ON DELETE` / `ON UPDATE`)
 
-1. **`ON DELETE CASCADE`**: Automatically deletes child rows when the referenced parent row is deleted.
-   * *Use Case:* Deleting a `User` automatically deletes all their `Posts` and `Comments`.
-2. **`ON DELETE SET NULL`**: Sets the foreign key column in child rows to `NULL` when parent is deleted.
-   * *Use Case:* Deleting a `Department` sets `department_id` to `NULL` for attached `Employees`.
-3. **`ON DELETE SET DEFAULT`**: Sets child foreign key to its defined default value.
-4. **`ON DELETE RESTRICT` / `NO ACTION`**: Prevents parent row deletion if any child rows reference it (Throws Foreign Key Constraint Error).
+১. **`ON DELETE CASCADE`**: প্যারেন্ট টেবিলের কোনো রো ডিলেট করা হলে চাইল্ড টেবিলের সংশ্লিষ্ট রেফারেন্সড রো-গুলোও স্বয়ংক্রিয়ভাবে ডিলেট হয়ে যাবে।
+   * *বাস্তব উদাহরণ (Use Case):* কোনো `User` ডিলেট করা হলে তার করা সমস্ত `Posts` এবং `Comments` স্বয়ংক্রিয়ভাবে ডিলেট হয়ে যাবে।
+২. **`ON DELETE SET NULL`**: প্যারেন্ট টেবিলের কোনো রো ডিলেট করা হলে চাইল্ড টেবিলের সংশ্লিষ্ট ফরেন কী কলামের মান স্বয়ংক্রিয়ভাবে `NULL` হয়ে যাবে।
+   * *বাস্তব উদাহরণ (Use Case):* কোনো `Department` ডিলেট করা হলে উক্ত ডিপার্টমেন্টের সাথে যুক্ত `Employees` টেবিলে `department_id` কলামটির মান `NULL` হয়ে যাবে।
+৩. **`ON DELETE SET DEFAULT`**: প্যারেন্ট টেবিলের কোনো রো ডিলেট করা হলে চাইল্ড টেবিলের সংশ্লিষ্ট ফরেন কী কলামটির মান আগে থেকে সংজ্ঞায়িত ডিফল্ট (default value) মানে সেট হয়ে যাবে।
+৪. **`ON DELETE RESTRICT` / `NO ACTION`**: চাইল্ড টেবিলে কোনো রেফারেন্সড রো থাকলে প্যারেন্ট টেবিলের রো-টি ডিলেট হতে বাধা দেবে (এটি রান করলে Foreign Key Constraint Error দেখাবে)।
 
 ```sql
 CREATE TABLE Orders (
