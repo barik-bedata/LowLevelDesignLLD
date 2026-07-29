@@ -1116,6 +1116,10 @@ The process of structuring a relational database to minimize data redundancy and
 
 ### ২য় নরমাল ফর্ম - 2NF (Second Normal Form)
 
+#### 📝 Official Definition of 2NF (Second Normal Form):
+
+> **A relation is in Second Normal Form (2NF) if it is in First Normal Form (1NF) and every non-prime attribute is fully functionally dependent on every candidate key.**
+
 #### 📝 English Definitions (অফিসিয়াল ইংরেজি সংজ্ঞা):
 
 * **Definition 1 (Elmasri & Navathe)**:
@@ -1250,7 +1254,26 @@ The process of structuring a relational database to minimize data redundancy and
 
 ---
 
-### ৩য় নরমাল ফর্ম - 3NF (Third Normal Form)
+### ৩য় নরমাল ফর্ম - 3NF (Third Normal Form)
+
+#### 📝 Official Definition of 3NF (Third Normal Form):
+
+> **A relation is in Third Normal Form (3NF) if it is in Second Normal Form (2NF) and no non-prime attribute is transitively dependent on any candidate key.**
+
+আরও formal (canonical) definition:
+
+> A relation schema **R** is in **3NF** if, for every non-trivial functional dependency **X → A**, **at least one** of the following holds:
+>
+> 1. **X is a superkey**, or
+> 2. **A is a prime attribute** (i.e., part of some candidate key).
+
+#### সহজভাবে
+
+* **2NF**: কোনো partial dependency থাকবে না।
+* **3NF**: কোনো transitive dependency থাকবে না (non-prime attribute অন্য non-prime attribute-এর মাধ্যমে candidate key-এর উপর depend করবে না)।
+
+---
+
 * **মূল শর্ত (Official Rule)**: টেবিলটিকে অবশ্যই **2NF** হতে হবে এবং কোনো **স্থানান্তরকামী নির্ভরতা (Transitive Dependency)** থাকতে পারবে না। অর্থাৎ, কোনো নন-প্রাইম কলাম অন্য কোনো নন-প্রাইম কলামের ওপর নির্ভর করতে পারবে না ($A \rightarrow B$ এবং $B \rightarrow C$ হলে $A \rightarrow C$)।
   * **ইংরেজি স্ট্যান্ডার্ড সংজ্ঞা (Official English Definition)**: 
     > **"A relation schema R is in 3NF if, for EVERY functional dependency $X \rightarrow Y$ that holds in R, either $X$ is a superkey of R, or $Y$ is a prime attribute of R."**
