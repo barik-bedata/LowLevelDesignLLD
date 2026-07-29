@@ -1,5 +1,12 @@
 # Simple Mathematics (100 MCQs)
 
+> [!TIP]
+> **Study Instructions & Resources**
+> 1. Clear your core concepts using this document first. Aim to solve these within 1 minute per question.
+> 2. After completing these, practice random mock tests from **[IndiaBix (Aptitude)](https://www.indiabix.com/aptitude/questions-and-answers/)**. Many Bangladeshi companies pick questions directly from here.
+> 3. For time management and UI familiarity, practice on **[HackerRank (Algorithms/Aptitude)](https://www.hackerrank.com/)**.
+> 4. Keep an eye out for extra topics like Data Interpretation, Clocks/Calendars, and Seating Arrangements.
+
 **Context:** These questions closely mirror the standard aptitude questions (from platforms like HackerRank, Mettl, and books like R.S. Aggarwal) frequently used by top IT companies in Bangladesh (WellDev, Enosis, Brain Station 23, BJIT, Therap, etc.) for initial screening tests.
 
 ### Question 1
