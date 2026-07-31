@@ -13,6 +13,7 @@
 7. [Prefix to Postfix Conversion](#৭-prefix-to-postfix-conversion)
 8. [গাণিতিক প্রমাণ ও ভ্যালিডেশন (Verification Test)](#৮-গাণিতিক-প্রমাণ-ও-ভ্যালিডেশন)
 9. [ফাইনাল চিট শিট (Ultimate Cheat Sheet)](#৯-ফাইনাল-চিট-শিট)
+10. [রিয়েল ইন্টারভিউ প্রশ্নাবলী (Brain Station 23)](#১০-রিয়েল-ইন্টারভিউ-প্রশ্নাবলী-brain-station-23)
 
 ---
 
@@ -291,3 +292,31 @@ Infix থেকে Prefix করার সবচেয়ে সহজ ও নি�
 
 ---
 *গাইডটি সফলভাবে তৈরি করা হয়েছে।*
+
+---
+
+## ১০. রিয়েল ইন্টারভিউ প্রশ্নাবলী (Brain Station 23)
+
+### ❓ প্রশ্ন: `(a + b) / c * d + E ^ F` এর Postfix নির্ণয় করো।
+
+#### 📝 ধাপে ধাপে সমাধান টেবিল:
+
+| Symbol / Token | Stack State | Output (Postfix) | ব্যাখ্যা / বিবরণ |
+| :---: | :--- | :--- | :--- |
+| **`(`** | `(` | `` | ব্র্যাকেট ➔ Stack-এ Push |
+| **`a`** | `(` | `a` | Operand ➔ Output-এ |
+| **`+`** | `( +` | `a` | Operator ➔ Stack-এ Push |
+| **`b`** | `( +` | `a b` | Operand ➔ Output-এ |
+| **`)`** | `খালি` | `a b +` | `)` পাওয়া গেছে ➔ `(` পর্যন্ত Pop হয়ে `+` Output-এ গেল |
+| **`/`** | `/` | `a b +` | Operator ➔ Stack-এ Push |
+| **`c`** | `/` | `a b + c` | Operand ➔ Output-এ |
+| **`*`** | `*` | `a b + c /` | `/` এবং `*` এর ক্ষমতা সমান। তাই আগের `/` Pop হয়ে Output-এ গেল, নতুন `*` Push হলো |
+| **`d`** | `*` | `a b + c / d` | Operand ➔ Output-এ |
+| **`+`** | `+` | `a b + c / d *` | `*` এর ক্ষমতা `+` এর চেয়ে বেশি ➔ `*` Pop হয়ে Output-এ গেল, নতুন `+` Push হলো |
+| **`E`** | `+` | `a b + c / d * E` | Operand ➔ Output-এ |
+| **`^`** | `+ ^` | `a b + c / d * E` | `^` এর ক্ষমতা `+` এর চেয়ে বেশি ➔ Push হলো |
+| **`F`** | `+ ^` | `a b + c / d * E F` | Operand ➔ Output-এ |
+| **End** | `খালি` | **`a b + c / d * E F ^ +`** | ইনপুট শেষ ➔ Stack-এর বাকি সব (`^` তারপর `+`) Pop হয়ে Output-এ এল |
+
+✅ **চূড়ান্ত Postfix উত্তর:** **`a b + c / d * E F ^ +`**
+
